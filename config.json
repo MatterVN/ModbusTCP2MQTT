@@ -24,7 +24,7 @@
     "inverter_ip": "str",
     "inverter_port": "int?",
     "slave": "int(1,3)",
-    "model": "list(modbus-sma-SBn_n-1AV-40|INFO|WARNING|ERROR)?",
+    "model": "list(modbus-sma-SBn_n-1AV-40|modbus-sungrow-sg3kd|modbus-sungrow-sg3ks|modbus-sungrow-sg5kd|modbus-sungrow-sg8kd|modbus-sungrow-sg10kt|modbus-sungrow-sg10rt|modbus-sungrow-sh5k)?",
     "timeout" : "int(3,60)?",
     "scan_interval" : "int(10,300)?",
     "mqtt_host" : "str",
