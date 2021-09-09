@@ -1,0 +1,36 @@
+{
+  "name": "TCPModbus Solar Inverter",
+  "version": "1.0.3",
+  "slug": "modbus_inverter",
+  "description": "Sungrow SMA inverter data extractor",
+  "url": "https://github.com/ttvt/ModbusTCP",
+  "arch": ["armhf", "armv7", "aarch64", "amd64", "i386"],
+  "startup": "application",
+  "boot": "auto",
+  "options": {
+    "inverter_ip": "",
+    "inverter_port": 502,
+    "slave": 1,
+    "model": "",
+    "timeout": 3,
+    "scan_interval" : 10,
+    "mqtt_server": "core-mosquitto",
+    "mqtt_port": 1883,
+    "mqtt_topic": "inverter/stats",
+    "mqtt_username": "mqtt",
+    "mqtt_password": "mqtt"
+  },
+  "schema": {
+    "inverter_ip": "str",
+    "inverter_port": "int?",
+    "slave": "int(1,3)",
+    "model": "str",
+    "timeout" : "int(3,60)?",
+    "scan_interval" : "int(10,300)?",
+    "mqtt_server" : "str",
+    "mqtt_port": "int",
+    "mqtt_topic": "str?",
+    "mqtt_username": "str",
+    "mqtt_password": "str"
+  }
+}
