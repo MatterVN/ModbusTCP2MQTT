@@ -13,8 +13,8 @@ RUN chmod a+x /run.sh
 RUN apk add --no-cache python3-dev py3-pip g++
 RUN pip install -U pymodbus paho-mqtt dweepy influxdb SungrowModbusTcpClient readsettings
 
-CMD [ "/run.sh" ]
-#CMD ["python3", "solariot.py", "-v"]
+#CMD [ "/run.sh" ]
+CMD ["python3", "solariot.py", "-v"]
 
 
 #ENV PYTHONPATH="/config:$PYTHONPATH"
