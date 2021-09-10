@@ -282,13 +282,14 @@ def publish_mqtt(inverter):
             manufacture = 'SMA'
 
         DISCOVERY_PAYLOAD = '{{"name": "Inverter {}", "uniq_id":"{}","stat_t": "{}", "json_attr_t": "{}", "unit_of_meas": "{}","dev_cla": "{}","state_class": "{}", "val_tpl": "{{{{ value_json.{} / 1000 }}}}", "ic": "mdi:solar-power","device":{{ "name": "Solar Inverter","mf": "{}", "mdl": "{}", "connections":[["address", "{}" ]] }} }}'
-        energy_msg = DISCOVERY_PAYLOAD.format("energy","inverter_energy", SENSOR_TOPIC, SENSOR_TOPIC, "kWh", "energy", "total_increasing", "daily_power_yield", manufacture, options['model'], options['inverter_ip'])
-        power_msg = DISCOVERY_PAYLOAD.format("power", "inverter_power", SENSOR_TOPIC, SENSOR_TOPIC, "W", "power", "measurement","apparent_power", manufacture, options['model'], options['inverter_ip'], options['inverter_port'])
+        energy_today_msg = DISCOVERY_PAYLOAD.format("Energy Today","inverter_energy_today", SENSOR_TOPIC, SENSOR_TOPIC, "kWh", "energy", "total_increasing", "daily_power_yield", manufacture, options['model'], options['inverter_ip'])
+        energy_month_msg = DISCOVERY_PAYLOAD.format("Energy Monthly","inverter_energy_month", SENSOR_TOPIC, SENSOR_TOPIC, "kWh", "energy", "total_increasing", "monthly_power_yield", manufacture, options['model'], options['inverter_ip'])
+        power_msg = DISCOVERY_PAYLOAD.format("Power", "inverter_power", SENSOR_TOPIC, SENSOR_TOPIC, "W", "power", "measurement","total_active_power", manufacture, options['model'], options['inverter_ip'], options['inverter_port'])
 
-        result = mqtt_client.publish(DISCOVERY_TOPIC.format("energy"), energy_msg)
-        #result.wait_for_publish()
+        result = mqtt_client.publish(DISCOVERY_TOPIC.format("energy_today"), energy_today_msg)
+        result = mqtt_client.publish(DISCOVERY_TOPIC.format("energy_monthly"), energy_month_msg)        
         result = mqtt_client.publish(DISCOVERY_TOPIC.format("power"), power_msg)
-        #result.wait_for_publish()
+
     
     result = mqtt_client.publish(SENSOR_TOPIC, json.dumps(inverter).replace('"', '\"'))
     result.wait_for_publish()
