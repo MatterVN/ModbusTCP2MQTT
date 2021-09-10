@@ -6,7 +6,7 @@
 ```yaml
 inverter_ip: Your Inverter IP
 inverter_port: Your Inverter Port (Default 502)
-slave: Sungrow(1); SMA (3)
+#slave: Sungrow(1); SMA (3)
 model: one of supported models
 timeout: 3->60
 scan_interval: 10-300
@@ -14,6 +14,7 @@ mqtt_host: 'core-mosquitto'
 mqtt_port: '1883'
 mqtt_username: BROKER_USER
 mqtt_password: BROKER_PASS
+log_level: INFO|WARNING|DEBUG
 ```
 
 Your MQTT Broker address and credentials. If you don't know what this is, install this addon:

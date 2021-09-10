@@ -1,20 +1,18 @@
-#ARG BUILD_FROM=hassioaddons/base-python
 ARG BUILD_FROM
 FROM $BUILD_FROM
 ENV LANG C.UTF-8
 
 #WORKDIR /
 COPY . /
-RUN chmod a+x /run.sh
-
 
 
 # Install requirements for add-on
-RUN apk add --no-cache python3-dev py3-pip g++
-RUN pip install -U pymodbus paho-mqtt dweepy influxdb SungrowModbusTcpClient readsettings
+#RUN apk add --no-cache python3-dev py3-pip g++
 
-#CMD [ "/run.sh" ]
-CMD ["python3", "solariot.py", "-v"]
+COPY requirements.txt /tmp/
+RUN pip3 install -r /tmp/requirements.txt
+
+CMD ["python3", "solariot.py"]
 
 
 #ENV PYTHONPATH="/config:$PYTHONPATH"

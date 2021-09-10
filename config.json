@@ -2,35 +2,35 @@
   "name": "TCPModbus Solar Inverter",
   "version": "1.0.3",
   "slug": "modbus_inverter",
-  "description": "Sungrow SMA inverter data extractor Addon",
+  "description": "Sungrow-SMA inverter communication Addon",
   "url": "https://github.com/TenySmart/ModbusTCP2MQTT",
   "arch": ["armhf", "armv7", "aarch64", "amd64", "i386"],
   "startup": "application",
   "boot": "auto",
   "options": {
-    "inverter_ip": "",
+    "inverter_ip": "192.168.0.8",
     "inverter_port": 502,
-    "slave": 1,
-    "model": "",
-    "timeout": 3,
-    "scan_interval" : 10,
+    "model": "sungrow-sg10kt",
+    "timeout": 5,
+    "scan_interval" : 20,
     "mqtt_host": "core-mosquitto",
     "mqtt_port": 1883,
-    "mqtt_topic": "inverter/stats",
+    "mqtt_topic": "inverter/stat",
     "mqtt_username": "mqtt",
-    "mqtt_password": "mqtt"
+    "mqtt_password": "tualatin",
+    "log_level": "DEBUG"
   },
   "schema": {
     "inverter_ip": "str",
     "inverter_port": "int?",
-    "slave": "int(1,3)",
-    "model": "list(modbus-sma-SBn_n-1AV-40|INFO|WARNING|ERROR)?",
+    "model": "list(sma-SBn_n-1AV-40|sungrow-sg3kd|sungrow-sg3ks|sungrow-sg5kd|sungrow-sg8kd|sungrow-sg10kt|sungrow-sg10rt|sungrow-sh5k)?",
     "timeout" : "int(3,60)?",
     "scan_interval" : "int(10,300)?",
     "mqtt_host" : "str",
     "mqtt_port": "int",
     "mqtt_topic": "str?",
     "mqtt_username": "str",
-    "mqtt_password": "str"
+    "mqtt_password": "str",
+    "log_level": "list(DEBUG|INFO|WARNING)?"
   }
 }

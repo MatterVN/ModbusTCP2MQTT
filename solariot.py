@@ -24,16 +24,12 @@ from SungrowModbusTcpClient import SungrowModbusTcpClient
 from pymodbus.payload import BinaryPayloadDecoder
 from pymodbus.client.sync import ModbusTcpClient
 from pymodbus.constants import Endian
-from influxdb import InfluxDBClient
 from importlib import import_module
 from threading import Thread
 
 import paho.mqtt.client as mqtt
 import datetime
-import requests
-import argparse
 import logging
-import dweepy
 import json
 import time
 import sys
@@ -43,33 +39,25 @@ import re
 MIN_SIGNED   = -2147483648
 MAX_UNSIGNED =  4294967295
 
-requests.packages.urllib3.disable_warnings() 
 
-# Load in the config module
-parser = argparse.ArgumentParser()
-parser.add_argument("-c", "--config", default="config", help="Python module to load as our config")
-parser.add_argument("-v", "--verbose", action="count", default=0, help="Level of verbosity 0=ERROR 1=INFO 2=DEBUG")
-parser.add_argument("--one-shot", action="store_true", help="Run solariot just once then exit, useful for cron based execution")
-args = parser.parse_args()
-
-if args.verbose == 0:
+f = open ('data/options.json', "r")
+options = json.load(f)
+if options['log_level'] == 'WARNING':
     log_level = logging.WARNING
-elif args.verbose == 1:
+elif options['log_level'] == 'INFO':
     log_level = logging.INFO
 else:
     log_level = logging.DEBUG
-
 logging.basicConfig(level=log_level)
 
-try:
-    f = open ('data/options.json', "r")
-    #config = import_module(args.config)
-    options = json.load(f)
-    f.close()
+if "sungrow-" in options['model']:
+    options['slave'] = 0x01
+else:
+    options['slave'] = 3
+f.close()
 
-    logging.info(f"Loaded options {options['model']}")
-except ModuleNotFoundError:
-    parser.error(f"Unable to locate {args.config}.py")
+logging.info(f"Inverter Model: {options['model']}")
+    
 
 # SMA datatypes and their register lengths
 # S = Signed Number, U = Unsigned Number, STR = String
@@ -85,7 +73,6 @@ sma_moddatatype = {
 
 # Load the modbus register map for the inverter
 modmap_file = f"modbus-{options['model']}"
-
 try:
     modmap = import_module(modmap_file)
 except ModuleNotFoundError:
@@ -108,133 +95,24 @@ else:
     logging.info("Creating ModbusTcpClient")
     client = ModbusTcpClient(**client_payload)
 
-logging.info("Connecting")
+logging.info("Connecting Modbus")
 client.connect()
 client.close()
-logging.info("Connected")
+logging.info("Modbus connected")
 
 # Configure MQTT
-if "mqtt_server" in options:
-    mqtt_client = mqtt.Client(getattr(options, "mqtt_client_name", "pv_data"))
-
-    if "mqtt_username" in options and "mqtt_password" in options:
-        mqtt_client.username_pw_set(options['mqtt_username'], options['mqtt_password'])
+if "mqtt_host" in options and "mqtt_username" in options and "mqtt_password" in options:
+    mqtt_client = mqtt.Client("ModbusTCP")
+    mqtt_client.username_pw_set(options['mqtt_username'], options['mqtt_password'])
 
     if options['mqtt_port'] == 8883:
         mqtt_client.tls_set()
 
-    mqtt_client.connect(options['mqtt_server'], port=options['mqtt_port'])
+    mqtt_client.connect(options['mqtt_host'], port=options['mqtt_port'])
     logging.info("Configured MQTT Client")
 else:
     mqtt_client = None
     logging.info("No MQTT configuration detected")
-
-# Configure InfluxDB
-if "influxdb_ip" in options:
-    flux_client = InfluxDBClient(
-        options['influxdb_ip'],
-        options['influxdb_port'],
-        options['influxdb_user'],
-        options['influxdb_password'],
-        options['influxdb_database'],
-        ssl=options['influxdb_ssl'],
-        verify_ssl=options['influxdb_verify_ssl'],
-    )
-
-    logging.info("Configured InfluxDB Client")
-else:
-    flux_client = None
-    logging.info("No InfluxDB configuration detected")
-
-# Configure PVOutput
-if "pvoutput_api" in options:
-    class PVOutputPublisher(object):
-        def __init__(self, api_key, system_id, metric_mappings, rate_limit=60, status_url="https://pvoutput.org/service/r2/addstatus.jsp"):
-            self.api_key = api_key
-            self.system_id = system_id
-            self.status_url = status_url
-            self.metric_mappings = metric_mappings
-            self.rate_limit = rate_limit
-
-            self.latest_run = None
-
-        @property
-        def headers(self):
-            return {
-                "X-Pvoutput-Apikey": self.api_key,
-                "X-Pvoutput-SystemId": self.system_id,
-                "Content-Type": "application/x-www-form-urlencoded",
-                "cache-control": "no-cache",
-            }
-
-        def publish_status(self, metrics):
-            """
-            See https://pvoutput.org/help.html#api-addstatus
-            Post the following values:
-            * v1 - Energy Generation
-            * v2 - Power Generation
-            * v3 - Energy Consumption
-            * v4 - Power Consumption
-            * v5 - Temperature
-            * v6 - Voltage
-            """
-            at_least_one_of = set(["v1", "v2", "v3", "v4"])
-
-            now = datetime.datetime.now()
-
-            if self.latest_run:
-                # Spread out our publishes over the hour based on the rate limit
-                time_diff = (now - self.latest_run).total_seconds()
-
-                if time_diff < (3600 / self.rate_limit):
-                    return "skipped"
-
-            parameters = {
-                "d": now.strftime("%Y%m%d"),
-                "t": now.strftime("%H:%M"),
-                "c1": 1,
-            }
-
-            if self.metric_mappings.get("Energy Generation") in metrics:
-                parameters["v1"] = metrics[self.metric_mappings.get("Energy Generation")]
-
-            if self.metric_mappings.get("Power Generation") in metrics:
-                parameters["v2"] = metrics[self.metric_mappings.get("Power Generation")]
-
-            if self.metric_mappings.get("Energy Consumption") in metrics:
-                parameters["v3"] = metrics[self.metric_mappings.get("Energy Consumption")]
-
-            if self.metric_mappings.get("Power Consumption") in metrics:
-                parameters["v4"] = metrics[self.metric_mappings.get("Power Consumption")]
-
-            if self.metric_mappings.get("Temperature") in metrics:
-                parameters["v5"] = metrics[self.metric_mappings.get("Temperature")]
-
-            if self.metric_mappings.get("Voltage") in metrics:
-                parameters["v6"] = metrics[self.metric_mappings.get("Voltage")]
-
-            if not at_least_one_of.intersection(parameters.keys()):
-                raise RuntimeError("Metrics => PVOutput mapping failed, please review metric names and update")
-
-            response = requests.post(url=self.status_url, headers=self.headers, params=parameters)
-
-            if response.status_code != requests.codes.ok:
-                raise RuntimeError(response.text)
-
-            logging.debug("Successfully posted status update to PVOutput")
-            self.latest_run = now
-
-    pvoutput_client = PVOutputPublisher(
-        options['pvoutput_api'],
-        options['pvoutput_sid'],
-        modmap.pvoutput,
-        rate_limit=options['pvoutput_rate_limit'],
-    )
-
-    logging.info("Configured PVOutput Client")
-else:
-    pvoutput_client = None
-    logging.info("No PVOutput configuration detected")
 
 # Inverter Scanning
 inverter = {}
@@ -262,7 +140,6 @@ def load_registers(register_type, start, count=100):
 
     if rr.isError():
         logging.warning("Modbus connection failed")
-        exit()
         return False
 
     if not hasattr(rr, 'registers'):
@@ -392,22 +269,29 @@ def load_sma_register(registers):
     # Add timestamp
     inverter["00000 - Timestamp"] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-def publish_influx(metrics):
-    target = flux_client.write_points([metrics])
-    logging.info("Published to InfluxDB")
-    return target
-
-def publish_dweepy(inverter):
-    result = dweepy.dweet_for(options['dweepy_uuid'], inverter)
-    logging.info("Published to dweet.io")
-    return result
 
 def publish_mqtt(inverter):
     # After a while you'll need to reconnect, so just reconnect before each publish
     mqtt_client.reconnect()
+    DISCOVERY_TOPIC = 'homeassistant/sensor/inverter/{}/config'# energy/power
+    SENSOR_TOPIC = 'inverter/tele/SENSOR'
+    if "sungrow-" in options['model']:
+        manufacture = 'Sungrow'
+    else:
+        manufacture = 'SMA'
 
-    result = mqtt_client.publish(options['mqtt_topic'], json.dumps(inverter).replace('"', '\"'))
+    DISCOVERY_PAYLOAD = '{{"name": "Inverter {}", "uniq_id":"{}","stat_t": "{}", "json_attr_t": "{}", "unit_of_meas": "{}","dev_cla": "{}","state_class": "{}", "val_tpl": "{{{{ value_json.{} / 1000 }}}}", "ic": "mdi:solar-power","device":{{ "name": "Solar Inverter","mf": "{}", "mdl": "{}", "connections":[["address", "{}" ]] }} }}'
+    energy_msg = DISCOVERY_PAYLOAD.format("energy","inverter_energy", SENSOR_TOPIC, SENSOR_TOPIC, "kWh", "energy", "total_increasing", "daily_power_yield", manufacture, options['model'], options['inverter_ip'])
+    power_msg = DISCOVERY_PAYLOAD.format("power", "inverter_power", SENSOR_TOPIC, SENSOR_TOPIC, "W", "power", "measurement","apparent_power", manufacture, options['model'], options['inverter_ip'], options['inverter_port'])
+    
+
+    result = mqtt_client.publish(DISCOVERY_TOPIC.format("energy"), energy_msg)
     result.wait_for_publish()
+    result = mqtt_client.publish(DISCOVERY_TOPIC.format("power"), power_msg)
+    result.wait_for_publish()
+    result = mqtt_client.publish(SENSOR_TOPIC, json.dumps(inverter).replace('"', '\"'))
+    result.wait_for_publish()
+
 
     if result.rc != mqtt.MQTT_ERR_SUCCESS:
         # See https://github.com/eclipse/paho.mqtt.python/blob/master/src/paho/mqtt/client.py#L149 for error code mapping
@@ -417,24 +301,6 @@ def publish_mqtt(inverter):
 
     return result
 
-def publish_pvoutput(inverter):
-    result = pvoutput_client.publish_status(inverter)
-
-    if result == "skipped":
-        logging.info("Skipping PVOutput to stay under the rate limit")
-    else:
-        logging.info("Published to PVOutput")
-    return result
-
-def save_json(inverter):
-    try:
-        f = open(options['json_file'],'w')
-        f.write(json.dumps(inverter))
-        f.close()
-    except Exception as err:
-        logging.error("Error writing telemetry to file: %s" % err)
-        return
-    logging.info("Inverter telemetry written to %s file." % options['json_file'])
 
 # Core monitoring loop
 def scrape_inverter():
@@ -494,34 +360,6 @@ while True:
     if mqtt_client is not None:
         t = Thread(target=publish_mqtt, args=(inverter,))
         t.start()
-
-    if "dweepy_uuid" in options:
-        t = Thread(target=publish_dweepy, args=(inverter,))
-        t.start()
-
-    if flux_client is not None:
-        metrics = {
-            "measurement": "Sungrow",
-            "tags": {
-                "location": "Gabba",
-            },
-            "fields": inverter,
-        }
-
-        t = Thread(target=publish_influx, args=(metrics,))
-        t.start()
-
-    if pvoutput_client is not None:
-        t = Thread(target=publish_pvoutput, args=(inverter,))
-        t.start()
-
-    if "json_file" in options:
-        t = Thread(target=save_json, args=(inverter,))
-        t.start()
-
-    if args.one_shot:
-        logging.info("Exiting due to --one-shot")
-        break
 
     # Sleep until the next scan
     time.sleep(options['scan_interval'])
