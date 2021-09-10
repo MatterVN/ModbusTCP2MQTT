@@ -337,10 +337,10 @@ def scrape_inverter():
             )
             del inverter["year"]
             del inverter["month"]
-            delattr(inverter, "day")
-            delattr(inverter, "hour")
-            delattr(inverter, "minute")
-            delattr(inverter, "second")
+            del inverter["day"]
+            del inverter["hour"]
+            del inverter["minute"]
+            del inverter["second"]
         except Exception:
             pass
     elif "sma-" in options['model']:
