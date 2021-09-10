@@ -15,7 +15,6 @@
     "scan_interval" : 20,
     "mqtt_host": "core-mosquitto",
     "mqtt_port": 1883,
-    "mqtt_topic": "inverter/stat",
     "mqtt_username": "mqtt",
     "mqtt_password": "tualatin",
     "log_level": "DEBUG"
@@ -28,7 +27,6 @@
     "scan_interval" : "int(10,300)?",
     "mqtt_host" : "str",
     "mqtt_port": "int",
-    "mqtt_topic": "str?",
     "mqtt_username": "str",
     "mqtt_password": "str",
     "log_level": "list(DEBUG|INFO|WARNING)?"
