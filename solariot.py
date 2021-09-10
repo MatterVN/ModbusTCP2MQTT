@@ -327,7 +327,7 @@ def scrape_inverter():
                 pass
 
         try:
-            inverter["timestamp"] = "%s-%s-%sT%s:%02d:%02d" % (
+            inverter["timestamp"] = "%s-%02d-%02dT%s:%02d:%02d" % (
                 inverter["year"],
                 inverter["month"],
                 inverter["day"],
@@ -335,6 +335,12 @@ def scrape_inverter():
                 inverter["minute"],
                 inverter["second"],
             )
+            delattr(inverter,"year")
+            delattr(inverter,"month")
+            delattr(inverter,"day")
+            delattr(inverter,"hour")
+            delattr(inverter,"minute")
+            delattr(inverter,"second")
         except Exception:
             pass
     elif "sma-" in options['model']:

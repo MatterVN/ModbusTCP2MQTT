@@ -2,7 +2,6 @@
 
 **Note**: _Remember to restart the add-on when the configuration is changed._
 
-
 ```yaml
 inverter_ip: Your Inverter IP
 inverter_port: Your Inverter Port (Default 502)
@@ -16,6 +15,10 @@ mqtt_password: BROKER_PASS
 log_level: INFO|WARNING|DEBUG
 ```
 
+#### scan_interval: 
+Increase scan_interval in case you get "Modbus connection failed" at run time.
+
+### MQTT
 Your MQTT Broker address and credentials. If you don't know what this is, install this addon:
 https://github.com/home-assistant/hassio-addons/tree/master/mosquitto
 
