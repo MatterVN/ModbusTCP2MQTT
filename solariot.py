@@ -95,7 +95,7 @@ else:
     logging.info("Creating ModbusTcpClient")
     client = ModbusTcpClient(**client_payload)
 
-logging.info("Connecting Modbus")
+#logging.info("Connecting Modbus")
 client.connect()
 client.close()
 logging.info("Modbus connected")

@@ -6,7 +6,6 @@
 ```yaml
 inverter_ip: Your Inverter IP
 inverter_port: Your Inverter Port (Default 502)
-#slave: Sungrow(1); SMA (3)
 model: one of supported models
 timeout: 3->60
 scan_interval: 10-300

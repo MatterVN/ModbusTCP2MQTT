@@ -11,15 +11,11 @@
   "startup": "application",
   "boot": "auto",
   "options": {
-    "inverter_ip": "192.168.0.8",
     "inverter_port": 502,
-    "model": "sungrow-sg10kt",
     "timeout": 5,
     "scan_interval" : 20,
     "mqtt_host": "core-mosquitto",
     "mqtt_port": 1883,
-    "mqtt_username": "",
-    "mqtt_password": "",
     "log_level": "INFO"
   },
   "schema": {
