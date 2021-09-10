@@ -301,7 +301,6 @@ def publish_mqtt(inverter):
 
     return result
 
-
 # Core monitoring loop
 def scrape_inverter():
     """ Connect to the inverter and scrape the metrics """
