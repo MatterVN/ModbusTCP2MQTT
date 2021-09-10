@@ -3,6 +3,8 @@ Sungrow &amp; SMA Solar Inverter addon for Home Assistant
 
 > This addon will connect directly to your Inverter using Modbus TCP.
 
+<img src="images/diagram.gif"/>
+
 ## Support models
 **The Inverter must be accessible on the network using TCP.**
 
@@ -21,9 +23,6 @@ modbus-sungrow-sg10kt
 modbus-sungrow-sg10rt
 
 modbus-sungrow-sh5k
-
-<img src="images/diagram.gif"/>
-
 
 
 ## Installation

@@ -1,8 +1,8 @@
 {
-  "name": "TCPModbus Solar Inverter",
+  "name": "ModbusTCP2MQTT",
   "version": "1.0.3",
   "slug": "modbus_inverter",
-  "description": "Sungrow-SMA inverter communication Addon",
+  "description": "Sungrow-SMA Solar inverter communication Addon",
   "url": "https://github.com/TenySmart/ModbusTCP2MQTT",
   "arch": ["armhf", "armv7", "aarch64", "amd64", "i386"],
   "services": [
