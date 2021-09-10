@@ -273,9 +273,9 @@ def load_sma_register(registers):
 def publish_mqtt(inverter):
     # After a while you'll need to reconnect, so just reconnect before each publish
     mqtt_client.reconnect()
+    SENSOR_TOPIC = 'inverter/tele/SENSOR'
     if  not Published_Discovery:
         DISCOVERY_TOPIC = 'homeassistant/sensor/inverter/{}/config'# energy/power
-        SENSOR_TOPIC = 'inverter/tele/SENSOR'
         if "sungrow-" in options['model']:
             manufacture = 'Sungrow'
         else:
@@ -327,10 +327,10 @@ def scrape_inverter():
                 pass
 
         try:
-            inverter["timestamp"] = "%s/%s/%s %s:%02d:%02d" % (
-                inverter["day"],
-                inverter["month"],
+            inverter["timestamp"] = "%s-%s-%sT%s:%02d:%02d" % (
                 inverter["year"],
+                inverter["month"],
+                inverter["day"],
                 inverter["hour"],
                 inverter["minute"],
                 inverter["second"],
