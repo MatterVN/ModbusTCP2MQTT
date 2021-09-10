@@ -268,7 +268,7 @@ def load_sma_register(registers):
         inverter[name] = displaydata
   
     # Add timestamp
-    inverter["00000 - Timestamp"] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    inverter["Timestamp"] = datetime.datetime.now().strftime("%Y-%mm-%dd %H:%M:%S")
 
 def publish_mqtt(inverter):
     # After a while you'll need to reconnect, so just reconnect before each publish
@@ -328,7 +328,7 @@ def scrape_inverter():
                 pass
 
         try:
-            inverter["timestamp"] = "%s-%02d-%02dT%s:%02d:%02d" % (
+            inverter["Timestamp"] = "%s-%02d-%02dT%s:%02d:%02d" % (
                 inverter["year"],
                 inverter["month"],
                 inverter["day"],
