@@ -9,7 +9,7 @@ ARG BUILD_ARCH
 #WORKDIR /
 COPY . /
 # Install requirements for add-on
-#RUN apk add --no-cache python3-dev py3-pip g++
+RUN apk add --no-cache python3-dev py3-pip g++
 
 RUN pip3 install -r /requirements.txt
 
