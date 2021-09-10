@@ -38,7 +38,7 @@ import re
 
 MIN_SIGNED   = -2147483648
 MAX_UNSIGNED =  4294967295
-Published_Discovery = False
+
     
 
 f = open ('data/options.json', "r")
@@ -270,27 +270,33 @@ def load_sma_register(registers):
     # Add timestamp
     inverter["Timestamp"] = datetime.datetime.now().strftime("%Y-%mm-%dd %H:%M:%S")
 
+def publish_mqtt_discovery(inverter):
+    # After a while you'll need to reconnect, so just reconnect before each publish
+    mqtt_client.reconnect()
+    logging.info("Publish discovery message")
+
+    SENSOR_TOPIC = 'inverter/tele/SENSOR'
+    DISCOVERY_TOPIC = 'homeassistant/sensor/inverter/{}/config'# energy/power
+    if "sungrow-" in options['model']:
+        manufacture = 'Sungrow'
+    else:
+        manufacture = 'SMA'
+    DISCOVERY_PAYLOAD = '{{"name": "Inverter {}", "uniq_id":"{}","stat_t": "{}", "json_attr_t": "{}", "unit_of_meas": "{}","dev_cla": "{}","state_class": "{}", "val_tpl": "{{{{ value_json.{} / 1000 }}}}", "ic": "mdi:solar-power","device":{{ "name": "Solar Inverter","mf": "{}", "mdl": "{}", "connections":[["address", "{}" ]] }} }}'
+    energy_today_msg = DISCOVERY_PAYLOAD.format("Energy Today","inverter_energy_today", SENSOR_TOPIC, SENSOR_TOPIC, "kWh", "energy", "total_increasing", "daily_power_yield", manufacture, options['model'], options['inverter_ip'])
+    energy_month_msg = DISCOVERY_PAYLOAD.format("Energy Monthly","inverter_energy_month", SENSOR_TOPIC, SENSOR_TOPIC, "kWh", "energy", "total_increasing", "monthly_power_yield", manufacture, options['model'], options['inverter_ip'])
+    power_msg = DISCOVERY_PAYLOAD.format("Power", "inverter_power", SENSOR_TOPIC, SENSOR_TOPIC, "W", "power", "measurement","total_active_power", manufacture, options['model'], options['inverter_ip'], options['inverter_port'])
+    result = mqtt_client.publish(DISCOVERY_TOPIC.format("energy_today"), energy_today_msg)
+    result = mqtt_client.publish(DISCOVERY_TOPIC.format("energy_monthly"), energy_month_msg)        
+    result = mqtt_client.publish(DISCOVERY_TOPIC.format("power"), power_msg)
+    result.wait_for_publish()
+
+
+
+
 def publish_mqtt(inverter):
     # After a while you'll need to reconnect, so just reconnect before each publish
     mqtt_client.reconnect()
     SENSOR_TOPIC = 'inverter/tele/SENSOR'
-    if  not Published_Discovery:
-        DISCOVERY_TOPIC = 'homeassistant/sensor/inverter/{}/config'# energy/power
-        if "sungrow-" in options['model']:
-            manufacture = 'Sungrow'
-        else:
-            manufacture = 'SMA'
-
-        DISCOVERY_PAYLOAD = '{{"name": "Inverter {}", "uniq_id":"{}","stat_t": "{}", "json_attr_t": "{}", "unit_of_meas": "{}","dev_cla": "{}","state_class": "{}", "val_tpl": "{{{{ value_json.{} / 1000 }}}}", "ic": "mdi:solar-power","device":{{ "name": "Solar Inverter","mf": "{}", "mdl": "{}", "connections":[["address", "{}" ]] }} }}'
-        energy_today_msg = DISCOVERY_PAYLOAD.format("Energy Today","inverter_energy_today", SENSOR_TOPIC, SENSOR_TOPIC, "kWh", "energy", "total_increasing", "daily_power_yield", manufacture, options['model'], options['inverter_ip'])
-        energy_month_msg = DISCOVERY_PAYLOAD.format("Energy Monthly","inverter_energy_month", SENSOR_TOPIC, SENSOR_TOPIC, "kWh", "energy", "total_increasing", "monthly_power_yield", manufacture, options['model'], options['inverter_ip'])
-        power_msg = DISCOVERY_PAYLOAD.format("Power", "inverter_power", SENSOR_TOPIC, SENSOR_TOPIC, "W", "power", "measurement","total_active_power", manufacture, options['model'], options['inverter_ip'], options['inverter_port'])
-
-        result = mqtt_client.publish(DISCOVERY_TOPIC.format("energy_today"), energy_today_msg)
-        result = mqtt_client.publish(DISCOVERY_TOPIC.format("energy_monthly"), energy_month_msg)        
-        result = mqtt_client.publish(DISCOVERY_TOPIC.format("power"), power_msg)
-
-    
     result = mqtt_client.publish(SENSOR_TOPIC, json.dumps(inverter).replace('"', '\"'))
     result.wait_for_publish()
 
@@ -328,7 +334,7 @@ def scrape_inverter():
                 pass
 
         try:
-            inverter["Timestamp"] = "%s-%02d-%02dT%s:%02d:%02d" % (
+            inverter["timestamp"] = "%s-%02d-%02dT%s:%02d:%02d" % (
                 inverter["year"],
                 inverter["month"],
                 inverter["day"],
@@ -354,6 +360,9 @@ def scrape_inverter():
     logging.info(inverter)
     return True
 
+#Publish once
+publish_mqtt_discovery(inverter)
+
 while True:
     # Scrape the inverter
     success = scrape_inverter()
@@ -368,6 +377,5 @@ while True:
         t = Thread(target=publish_mqtt, args=(inverter,))
         t.start()
 
-    Published_Discovery = True
     # Sleep until the next scan
     time.sleep(options['scan_interval'])
