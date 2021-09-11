@@ -30,6 +30,7 @@ from threading import Thread
 import paho.mqtt.client as mqtt
 import datetime
 import logging
+import getopt
 import json
 import time
 import sys
@@ -39,9 +40,45 @@ import re
 MIN_SIGNED   = -2147483648
 MAX_UNSIGNED =  4294967295
 
+
+##Load options
+options = {}
+full_cmd_arguments = sys.argv
+argument_list = full_cmd_arguments[1:]
+short_options = 'i:p:m:M:o:U:P:l:s:t'
+long_options = ['ip=', 'port=', 'model=', 'mqtt_host=', 'mqtt_port=',
+                 'mqtt_user=', 'mqtt_pass=', 'log_level=', 'scan=', 'timeout=']
+try:
+    arguments, values = getopt.getopt(
+        argument_list, short_options, long_options)
+except getopt.error as e:
+    raise ValueError('Invalid parameters!')
+
+for current_argument, current_value in arguments:
+    if current_value == 'null' or len(current_value) == 0 or current_value.isspace():
+        pass
+    elif current_argument in ("-i", "--ip"):
+        options['inverter_ip'] = current_value
+    elif current_argument in ("-p", "--port"):
+        options['inverter_port'] = current_value
+    elif current_argument in ("-m", "--model"):
+        options['model'] = current_value
+    elif current_argument in ("-M", "--mqtt_host"):
+        options['mqtt_host'] = current_value 
+    elif current_argument in ("-o", "--mqtt_port"):
+        options['mqtt_port'] = int(current_value)
+    elif current_argument in ("-U", "--mqtt_user"):
+        options['mqtt_user'] = current_value 
+    elif current_argument in ("-P", "--mqtt_pass"):
+        options['mqtt_pass'] = current_value 
+    elif current_argument in ("-l", "--log_level"):
+        options['log_level'] = current_value
+    elif current_argument in ("-s", "--scan"):
+        options['scan_interval'] = int(current_value)
+    elif current_argument in ("-t", "--timeout"):
+        options['timeout'] = int(current_value)
+
     
-f = open ('data/options.json', "r")
-options = json.load(f)
 if options['log_level'] == 'WARNING':
     log_level = logging.WARNING
 elif options['log_level'] == 'INFO':
@@ -54,10 +91,8 @@ if "sungrow-" in options['model']:
     options['slave'] = 0x01
 else:
     options['slave'] = 3
-f.close()
 
 
-    
 
 # SMA datatypes and their register lengths
 # S = Signed Number, U = Unsigned Number, STR = String
@@ -100,18 +135,13 @@ client.close()
 logging.info("Modbus connected")
 
 # Configure MQTT
-if "mqtt_host" in options and "mqtt_username" in options and "mqtt_password" in options:
-    mqtt_client = mqtt.Client("ModbusTCP")
-    mqtt_client.username_pw_set(options['mqtt_username'], options['mqtt_password'])
+mqtt_client = mqtt.Client("ModbusTCP")
+mqtt_client.username_pw_set(options['mqtt_user'], options['mqtt_pass'])
+if options['mqtt_port'] == 8883:
+    mqtt_client.tls_set()
 
-    if options['mqtt_port'] == 8883:
-        mqtt_client.tls_set()
-
-    mqtt_client.connect(options['mqtt_host'], port=options['mqtt_port'])
-    logging.info("Configured MQTT Client")
-else:
-    mqtt_client = None
-    logging.info("No MQTT configuration detected")
+mqtt_client.connect(options['mqtt_host'], port=options['mqtt_port'])
+logging.info("Configured MQTT Client")
 
 # Inverter Scanning
 inverter = {}

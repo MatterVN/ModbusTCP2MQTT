@@ -6,14 +6,17 @@ ENV LANG C.UTF-8
 ARG BUILD_VERSION
 ARG BUILD_ARCH
 
-#WORKDIR /
-COPY . /
+COPY models/ /
+COPY requirements.txt /tmp/
+COPY run.sh /
+COPY ModbusTCP.py /
+
 # Install requirements for add-on
 RUN apk add --no-cache python3-dev py3-pip g++
+RUN pip3 install -r /tmp/requirements.txt
+RUN chmod a+x /run.sh
 
-RUN pip3 install -r /requirements.txt
-
-CMD ["python3", "solariot.py"]
+CMD ["/run.sh"]
 
 LABEL \ 
     io.hass.name="ModbusTCP2MQTT" \
