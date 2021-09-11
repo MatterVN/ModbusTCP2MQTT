@@ -40,7 +40,6 @@ MIN_SIGNED   = -2147483648
 MAX_UNSIGNED =  4294967295
 
     
-
 f = open ('data/options.json', "r")
 options = json.load(f)
 if options['log_level'] == 'WARNING':
@@ -57,7 +56,7 @@ else:
     options['slave'] = 3
 f.close()
 
-logging.info(f"Inverter Model: {options['model']}")
+
     
 
 # SMA datatypes and their register lengths
@@ -90,13 +89,12 @@ client_payload = {
 }
 
 if "sungrow-" in options['model']:
-    logging.info("Creating SungrowModbusTcpClient")
+    logging.info(f"Create SungrowModbusTcpClient. Model: {options['model']}")
     client = SungrowModbusTcpClient.SungrowModbusTcpClient(**client_payload)
 else:
-    logging.info("Creating ModbusTcpClient")
+    logging.info(f"Create ModbusTcpClient. Model: {options['model']}")
     client = ModbusTcpClient(**client_payload)
 
-#logging.info("Connecting Modbus")
 client.connect()
 client.close()
 logging.info("Modbus connected")
@@ -271,20 +269,20 @@ def load_sma_register(registers):
     inverter["Timestamp"] = datetime.datetime.now().strftime("%Y-%mm-%dd %H:%M:%S")
 
 def publish_mqtt_discovery(inverter):
-    # After a while you'll need to reconnect, so just reconnect before each publish
     mqtt_client.reconnect()
-    logging.info("Publish discovery message")
+    logging.info("Publish Home Assistant Discovery message")
 
     SENSOR_TOPIC = 'inverter/tele/SENSOR'
     DISCOVERY_TOPIC = 'homeassistant/sensor/inverter/{}/config'# energy/power
     if "sungrow-" in options['model']:
-        manufacture = 'Sungrow'
+        manufacturer = 'Sungrow'
     else:
-        manufacture = 'SMA'
-    DISCOVERY_PAYLOAD = '{{"name": "Inverter {}", "uniq_id":"{}","stat_t": "{}", "json_attr_t": "{}", "unit_of_meas": "{}","dev_cla": "{}","state_class": "{}", "val_tpl": "{{{{ value_json.{} / 1000 }}}}", "ic": "mdi:solar-power","device":{{ "name": "Solar Inverter","mf": "{}", "mdl": "{}", "connections":[["address", "{}" ]] }} }}'
-    energy_today_msg = DISCOVERY_PAYLOAD.format("Energy Today","inverter_energy_today", SENSOR_TOPIC, SENSOR_TOPIC, "kWh", "energy", "total_increasing", "daily_power_yield", manufacture, options['model'], options['inverter_ip'])
-    energy_month_msg = DISCOVERY_PAYLOAD.format("Energy Monthly","inverter_energy_month", SENSOR_TOPIC, SENSOR_TOPIC, "kWh", "energy", "total_increasing", "monthly_power_yield", manufacture, options['model'], options['inverter_ip'])
-    power_msg = DISCOVERY_PAYLOAD.format("Power", "inverter_power", SENSOR_TOPIC, SENSOR_TOPIC, "W", "power", "measurement","total_active_power", manufacture, options['model'], options['inverter_ip'], options['inverter_port'])
+        manufacturer = 'SMA'
+    DISCOVERY_PAYLOAD = '{{"name": "Inverter {}", "uniq_id":"{}","stat_t": "{}", "json_attr_t": "{}", "unit_of_meas": "{}","dev_cla": "{}","state_class": "{}", "val_tpl": "{{{{ value_json.{} }}}}", "ic": "mdi:solar-power","device":{{ "name": "Solar Inverter","mf": "{}", "mdl": "{}", "connections":[["address", "{}" ]] }} }}'
+    
+    energy_today_msg = DISCOVERY_PAYLOAD.format("Energy Today","inverter_energy_today", SENSOR_TOPIC, SENSOR_TOPIC, "kWh", "energy", "total_increasing", "daily_power_yield / 1000", manufacturer, options['model'], options['inverter_ip'])
+    energy_month_msg = DISCOVERY_PAYLOAD.format("Energy Monthly","inverter_energy_month", SENSOR_TOPIC, SENSOR_TOPIC, "kWh", "energy", "total_increasing", "monthly_power_yield / 1000", manufacturer, options['model'], options['inverter_ip'])
+    power_msg = DISCOVERY_PAYLOAD.format("Power", "inverter_power", SENSOR_TOPIC, SENSOR_TOPIC, "W", "power", "measurement","total_pv_power", manufacturer, options['model'], options['inverter_ip'], options['inverter_port'])
     result = mqtt_client.publish(DISCOVERY_TOPIC.format("energy_today"), energy_today_msg)
     result = mqtt_client.publish(DISCOVERY_TOPIC.format("energy_monthly"), energy_month_msg)        
     result = mqtt_client.publish(DISCOVERY_TOPIC.format("power"), power_msg)
