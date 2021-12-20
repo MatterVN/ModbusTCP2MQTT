@@ -27,7 +27,7 @@ modbus-sungrow-sh5k
 
 ## Installation
 1. Navigate in your Home Assistant frontend to <kbd>Supervisor</kbd> -> <kbd>Add-on Store</kbd>.
-2. Click the 3-dots menu at upper right <kbd>...</kbd> > <kbd>Repositories</kbd> and add [https://github.com/TenySmart/HassioAddons](https://github.com/TenySmart/HassioAddonsAddons)
+2. Click the 3-dots menu at upper right <kbd>...</kbd> > <kbd>Repositories</kbd> and add [https://github.com/TenySmart/HassioAddon](https://github.com/TenySmart/HassioAddon)
 3. Install ModbusTCP2MQTT Addon
 4. Configure and <kbd>Start</kbd> it
 
