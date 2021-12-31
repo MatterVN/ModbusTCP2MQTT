@@ -302,8 +302,8 @@ def publish_mqtt_discovery(inverter):
     mqtt_client.reconnect()
     logging.info("Publish Home Assistant Discovery message")
 
-    SENSOR_TOPIC = 'inverter/tele/SENSOR'
-    DISCOVERY_TOPIC = 'homeassistant/sensor/inverter/{}/config'# energy/power
+    SENSOR_TOPIC = 'inverter_{}/tele/SENSOR'.format(options['model'])
+    DISCOVERY_TOPIC = 'homeassistant/sensor/inverter{}/{}/config'.format(options['model'], "{}") # energy/power
     if "sungrow-" in options['model']:
         manufacturer = 'Sungrow'
     else:
@@ -313,9 +313,18 @@ def publish_mqtt_discovery(inverter):
     energy_today_msg = DISCOVERY_PAYLOAD.format("Energy Today","inverter_energy_today", SENSOR_TOPIC, SENSOR_TOPIC, "kWh", "energy", "total_increasing", "daily_power_yield / 1000", manufacturer, options['model'], options['inverter_ip'])
     energy_month_msg = DISCOVERY_PAYLOAD.format("Energy Monthly","inverter_energy_month", SENSOR_TOPIC, SENSOR_TOPIC, "kWh", "energy", "total_increasing", "monthly_power_yield / 1000", manufacturer, options['model'], options['inverter_ip'])
     power_msg = DISCOVERY_PAYLOAD.format("Power", "inverter_power", SENSOR_TOPIC, SENSOR_TOPIC, "W", "power", "measurement","total_pv_power", manufacturer, options['model'], options['inverter_ip'], options['inverter_port'])
+    tempertature_msg = DISCOVERY_PAYLOAD.format("Temperature", "inverter_temperature", SENSOR_TOPIC, SENSOR_TOPIC, "°C", "temperature", "measurement","internal_temp", manufacturer, options['model'], options['inverter_ip'], options['inverter_port'])
+    daily_energy_consumpt_msg = DISCOVERY_PAYLOAD.format("Daily Energy Consumption", "inverter_energy_consumpt_daily", SENSOR_TOPIC, SENSOR_TOPIC, "kWh", "energy", "total_increasing","daily_energy_consumption", manufacturer, options['model'], options['inverter_ip'], options['inverter_port'])
+    daily_energy_import_msg = DISCOVERY_PAYLOAD.format("Daily Energy Import", "inverter_energy_import_daily", SENSOR_TOPIC, SENSOR_TOPIC, "kWh", "energy", "total_increasing","daily_purchased_energy", manufacturer, options['model'], options['inverter_ip'], options['inverter_port'])
+    
+
     result = mqtt_client.publish(DISCOVERY_TOPIC.format("energy_today"), energy_today_msg)
     result = mqtt_client.publish(DISCOVERY_TOPIC.format("energy_monthly"), energy_month_msg)        
     result = mqtt_client.publish(DISCOVERY_TOPIC.format("power"), power_msg)
+    result = mqtt_client.publish(DISCOVERY_TOPIC.format("temperature"), tempertature_msg)
+    result = mqtt_client.publish(DISCOVERY_TOPIC.format("daily_energy_consumpt"), daily_energy_consumpt_msg)
+    result = mqtt_client.publish(DISCOVERY_TOPIC.format("daily_energy_import"), daily_energy_import_msg)
+    
     result.wait_for_publish()
 
 
@@ -324,7 +333,7 @@ def publish_mqtt_discovery(inverter):
 def publish_mqtt(inverter):
     # After a while you'll need to reconnect, so just reconnect before each publish
     mqtt_client.reconnect()
-    SENSOR_TOPIC = 'inverter/tele/SENSOR'
+    SENSOR_TOPIC = 'inverter_{}/tele/SENSOR'.format(options['model'])
     result = mqtt_client.publish(SENSOR_TOPIC, json.dumps(inverter).replace('"', '\"'))
     result.wait_for_publish()
 

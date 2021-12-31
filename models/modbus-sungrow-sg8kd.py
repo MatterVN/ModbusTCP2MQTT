@@ -15,13 +15,13 @@ read_register = {
   "5036": "grid_frequency_10",      # Hz
   "5083": "export_power_overflow",  # W - House Grid Consumption (+ = importing, - = exporting)
   "5084": "export_power_indicator", # W - House Grid Consumption Overflow Indicator
-  "5091": "house_loads", # W - House Used Power - All sources
+  "5091": "power_meter", # W - House Used Power - All sources
   "5093": "daily_export_energy_0.01", # Wh
   "5095": "total_export_energy_10", # KWh
   "5097": "daily_import_energy_0.01", # Wh
   "5099": "total_import_energy_10", # KWh
-  "5101": "daily_self_consumption_energy_0.01", # Wh
-  "5103": "total_self_consumption_energy_10",   # KWh
+  "5101": "daily_energy_consumption_0.01", # Wh
+  "5103": "total_energy_consumption_10",   # KWh
 }
 
 holding_register = {
@@ -43,7 +43,7 @@ scan = """{
   "holding": [
     {
       "start": "4999",
-      "range": "6"
+      "range": "10"
     }
   ]
 }"""
