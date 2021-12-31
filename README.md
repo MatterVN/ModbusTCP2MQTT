@@ -22,6 +22,8 @@ modbus-sungrow-sg10kt
 
 modbus-sungrow-sg10rt
 
+modbus-sungrow-sh10rt
+
 modbus-sungrow-sh5k
 
 
