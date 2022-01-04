@@ -1,8 +1,10 @@
 # Changelog
 
-### 0.2.1 
-- Add sensors: inverter temperature, daily energy import, daily energy consumpt
-- Include model in mqtt topic
+## 0.2.1.1
+- Fix energy unit of measurement
+
+## 0.2.1 
+- Support SH10RT
 
 
 ## 0.2 

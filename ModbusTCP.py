@@ -314,8 +314,8 @@ def publish_mqtt_discovery(inverter):
     energy_month_msg = DISCOVERY_PAYLOAD.format("Energy Monthly","inverter_energy_month", SENSOR_TOPIC, SENSOR_TOPIC, "kWh", "energy", "total_increasing", "monthly_power_yield / 1000", manufacturer, options['model'], options['inverter_ip'])
     power_msg = DISCOVERY_PAYLOAD.format("Power", "inverter_power", SENSOR_TOPIC, SENSOR_TOPIC, "W", "power", "measurement","total_pv_power", manufacturer, options['model'], options['inverter_ip'], options['inverter_port'])
     tempertature_msg = DISCOVERY_PAYLOAD.format("Temperature", "inverter_temperature", SENSOR_TOPIC, SENSOR_TOPIC, "°C", "temperature", "measurement","internal_temp", manufacturer, options['model'], options['inverter_ip'], options['inverter_port'])
-    daily_energy_consumpt_msg = DISCOVERY_PAYLOAD.format("Daily Energy Consumption", "inverter_energy_consumpt_daily", SENSOR_TOPIC, SENSOR_TOPIC, "kWh", "energy", "total_increasing","daily_energy_consumption", manufacturer, options['model'], options['inverter_ip'], options['inverter_port'])
-    daily_energy_import_msg = DISCOVERY_PAYLOAD.format("Daily Energy Import", "inverter_energy_import_daily", SENSOR_TOPIC, SENSOR_TOPIC, "kWh", "energy", "total_increasing","daily_purchased_energy", manufacturer, options['model'], options['inverter_ip'], options['inverter_port'])
+    daily_energy_consumpt_msg = DISCOVERY_PAYLOAD.format("Daily Energy Consumption", "inverter_energy_consumpt_daily", SENSOR_TOPIC, SENSOR_TOPIC, "kWh", "energy", "total_increasing","daily_energy_consumption / 1000", manufacturer, options['model'], options['inverter_ip'], options['inverter_port'])
+    daily_energy_import_msg = DISCOVERY_PAYLOAD.format("Daily Energy Import", "inverter_energy_import_daily", SENSOR_TOPIC, SENSOR_TOPIC, "kWh", "energy", "total_increasing","daily_purchased_energy / 1000", manufacturer, options['model'], options['inverter_ip'], options['inverter_port'])
     
 
     result = mqtt_client.publish(DISCOVERY_TOPIC.format("energy_today"), energy_today_msg)
