@@ -6,7 +6,11 @@ PORT=$(bashio::config 'Inverter_port')
 MODEL=$(bashio::config 'Model')
 SCAN_INTERVAL=$(bashio::config 'Scan_interval')
 SCAN_TIMEOUT=$(bashio::config 'Scan_timeout')
-LOG_LEVEL=$(bashio::config 'Log_level')
+LOG_LEVEL=$(bashio::config 'log_level')
+MQTT_HOST=$(bashio::config 'Mqtt_host')
+MQTT_PORT=$(bashio::config 'Mqtt_port')
+MQTT_USER=$(bashio::config 'Mqtt_user')
+MQTT_PASS=$(bashio::config 'Mqtt_pass')
 
 
 if ! bashio::services.available "mqtt"; then
