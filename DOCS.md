@@ -10,7 +10,7 @@
 
 ```yaml
 Inverter_IP: Your Inverter IP
-Inverter_port: Your Inverter Port (Default: 502)
+Inverter_port: Your Inverter Port (Default: 502). If you have a WiNet-S dongle set to 8082
 Model: one of supported models
 Scan_interval: 10-600
 Scan_timeout: 3->60

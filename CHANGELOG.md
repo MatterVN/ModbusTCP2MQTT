@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.2.2
+- Add Sungrow-SG7RT
+- ModbusWebClient (port 8082) support WiNet-S dongle
+- Fix metric name
+
 ## 0.2.1.1
 - Fix energy unit of measurement
 
