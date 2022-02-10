@@ -23,5 +23,9 @@
     "Scan_interval" : "int(10,600)",
     "Scan_timeout": "int(3,60)",
     "Log_level": "list(DEBUG|INFO|WARNING)"
+    "Mqtt_host": "str",
+    "Mqtt_port": "int",
+    "Mqtt_user": "str",
+    "Mqtt_pass": "str"
   }
 }
