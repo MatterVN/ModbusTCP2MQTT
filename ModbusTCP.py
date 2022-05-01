@@ -21,6 +21,7 @@
 # THE SOFTWARE.
 
 from SungrowModbusTcpClient import SungrowModbusTcpClient
+from SungrowModbusWebClient import SungrowModbusWebClient
 from pymodbus.payload import BinaryPayloadDecoder
 from pymodbus.client.sync import ModbusTcpClient
 from pymodbus.constants import Endian
@@ -124,7 +125,7 @@ client_payload = {
 }
 
 if "sungrow-" in options['model']:
-    if config.inverter_port == 8082:
+    if options['inverter_port'] == 8082:
         logging.info(f"Creating SungrowModbusWebClient. Model: {options['model']}")
         client = SungrowModbusWebClient.SungrowModbusWebClient(**client_payload)
     else:
