@@ -1,6 +1,5 @@
 #!/usr/bin/env bashio
 
-
 IP=$(bashio::config 'Inverter_IP')
 PORT=$(bashio::config 'Inverter_port')
 MODEL=$(bashio::config 'Model')
@@ -14,7 +13,7 @@ MQTT_PASS=$(bashio::config 'Mqtt_pass')
 
 
 if ! bashio::services.available "mqtt"; then
-    bashio::exit.nok "No internal MQTT service found. Please install Mosquitto broker."
+    bashio::exit.nok "No internal MQTT Broker found. Please install Mosquitto broker."
 else
     MQTT_HOST=$(bashio::services mqtt "host")
     MQTT_PORT=$(bashio::services mqtt "port")
