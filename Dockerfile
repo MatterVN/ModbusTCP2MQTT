@@ -6,14 +6,19 @@ ENV LANG C.UTF-8
 ARG BUILD_VERSION
 ARG BUILD_ARCH
 
-COPY models/ /
-COPY requirements.txt /tmp/
-COPY run.sh /
-COPY ModbusTCP.py /
 
-# Install requirements for add-on
+COPY requirements.txt ./
 RUN apk add --no-cache python3-dev py3-pip g++
-RUN pip3 install -r /tmp/requirements.txt
+RUN pip install --upgrade pycryptodomex==3.11.0 --no-cache-dir -r requirements.txt
+
+COPY SunGather/ /
+COPY SunGather/exports/ /exports
+COPY run.sh /
+COPY config_generator.py /
+
+VOLUME /logs
+VOLUME /config
+# Install requirements for add-on
 RUN chmod a+x /run.sh
 
 CMD ["/run.sh"]

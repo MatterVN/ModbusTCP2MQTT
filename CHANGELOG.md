@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.3
+- Use new source SunGather
+- Auto detect Inverter model
+
 ## 0.2.2
 - Add Sungrow-SG7RT
 - ModbusWebClient (port 8082) support WiNet-S dongle

@@ -1,0 +1,34 @@
+name: ModbusTCP2MQTT
+version: "0.3.0"
+slug: modbus_inverter
+description: Sungrow/SMA inverter Modbus communication
+url: "https://github.com/TenySmart/ModbusTCP2MQTT"
+arch: 
+  - armhf
+  - armv7
+  - aarch64
+  - amd64
+  - i386
+init: false
+startup: application
+boot: auto
+services:
+  - "mqtt:need"
+options: 
+  Inverter_host: ""
+  Inverter_port: 502
+  Scan_interval: 30
+  Scan_timeout: 5
+  Connection: "Sungrow"
+  Smart_meter: false
+  Scan_level: "STANDARD"
+  Log_level: "INFO"
+schema:
+  Inverter_host: str
+  Inverter_port: port
+  Scan_interval: int(10,600)
+  Scan_timeout: int(3,60)
+  Connection: "list(Sungrow|Modbus|HTTP)"
+  Smart_meter: bool
+  Scan_level: "list(BASIC|STANDARD|DETAIL|ALL)"
+  Log_level: "list(INFO|WARNING|ERROR|DEBUG)"
