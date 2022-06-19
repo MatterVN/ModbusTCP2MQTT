@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.3.1
+- Remove conflict config.json file
+
 ## 0.3
 - Use new source SunGather
 - Auto detect Inverter model
