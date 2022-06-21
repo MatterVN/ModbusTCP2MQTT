@@ -25,8 +25,8 @@ import yaml
 options = {'inverter':{},'exports':[{}]}
 full_cmd_arguments = sys.argv
 argument_list = full_cmd_arguments[1:]
-short_options = 'h:p:t:s:c:m:l:L:M:P:U:A'
-long_options = ['host=','port=','timeout=','scan=','connection=','meter=','level=','log_level=',
+short_options = 'h:p:o:t:s:c:m:l:L:M:P:U:A'
+long_options = ['host=','port=','model=','timeout=','scan=','connection=','meter=','level=','log_level=',
                 'mqtt_host=', 'mqtt_port=','mqtt_user=', 'mqtt_pass=']
 
 def level(l):
@@ -52,6 +52,8 @@ for current_argument, current_value in arguments:
         options['inverter']['host'] = current_value
     elif current_argument in ("-p", "--port"):
         options['inverter']['port'] = int(current_value)
+    elif current_argument in ("-o", "--model"):
+        options['inverter']['model'] = current_value
     elif current_argument in ("-t", "--timeout"):
         options['inverter']['timeout'] = int(current_value)
     elif current_argument in ("-s", "--scan"):

@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.3.2
+- Add option model to force detect
+- Add internal temperature sensor
+
 ## 0.3.1
 - Remove conflict config.json file
 

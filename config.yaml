@@ -1,5 +1,5 @@
 name: ModbusTCP2MQTT
-version: "0.3.0"
+version: "0.3.2"
 slug: modbus_inverter
 description: Sungrow/SMA inverter Modbus communication
 url: "https://github.com/TenySmart/ModbusTCP2MQTT"
@@ -26,6 +26,7 @@ options:
 schema:
   Inverter_host: str
   Inverter_port: port
+  Inverter_model: str?
   Scan_interval: int(10,600)
   Scan_timeout: int(3,60)
   Connection: "list(Sungrow|Modbus|HTTP)"
