@@ -25,5 +25,5 @@ else
     bashio::log.info "Configured'$MQTT_HOST' mqtt broker."
 fi
 python3 /config_generator.py --host=$HOST --port=$PORT --model=$MODEL --mqtt_host=$MQTT_HOST --mqtt_port=$MQTT_PORT --mqtt_user=$MQTT_USER --mqtt_pass=$MQTT_PASS --scan=$SCAN_INTERVAL --timeout=$SCAN_TIMEOUT --connection=$CONNECTION --meter=$SMART_METER --level=$LEVEL --log_level=$LOG_LEVEL
-bashio::log.info "Generated config file"
+bashio::log.info "Generated config file."
 exec python3 /sungather.py -c config.sg

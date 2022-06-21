@@ -22,8 +22,8 @@ Scan_level: BASIC|STANDARD|DETAIL|ALL
 
 
 ### Option `Scan_level` 
- - `BASIC`: Solar Generation
- - `STANDARD`: This is the most useful data for day to day
+ - `BASIC`: State, Solar Generation, Active Power
+ - `STANDARD`: Power, Voltage, Meter (mostly use)
  - `DETAIL`: This should be everything your inverter supports
  - `ALL`: This will try every register, you will get lots of 0/65535 responses for registers not supported. 
 

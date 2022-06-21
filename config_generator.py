@@ -17,12 +17,15 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
+#Test: config_generator.py --host=HOST --port=502 --model=model --mqtt_host=MQTT_HOST --mqtt_port=MQTT_PORT --mqtt_user=MQTT_USER --mqtt_pass=MQTT_PASS --scan=10 --timeout=3 --connection=sungrow --meter=true --level=0 --log_level=INFO
+
 
 import getopt
 import sys
 import yaml
 ##Load options
 options = {'inverter':{},'exports':[{}]}
+sensors =[]
 full_cmd_arguments = sys.argv
 argument_list = full_cmd_arguments[1:]
 short_options = 'h:p:o:t:s:c:m:l:L:M:P:U:A'
@@ -75,68 +78,57 @@ for current_argument, current_value in arguments:
     elif current_argument in ("-A", "--mqtt_pass"):
         options['exports'][0]['password'] = current_value 
 
-    options['exports'][0]['name'] = "mqtt" 
-    options['exports'][0]['enabled'] = True
-    options['exports'][0]['homeassistant']= True
-    sensor = [{},{},{},{},{},{},{},{},{}]
-
-    sensor[0]['name'] = "Daily Generation"
-    sensor[0]['sensor_type'] = "sensor"
-    sensor[0]['register'] = "daily_power_yields"
-    sensor[0]['dev_class'] = "energy"
-    sensor[0]['state_class'] = "total_increasing"
+options['exports'][0]['name'] = "mqtt" 
+options['exports'][0]['enabled'] = True
+options['exports'][0]['homeassistant']= True
     
-    sensor[1]['name'] = "Active Power"
-    sensor[1]['sensor_type'] = "sensor"
-    sensor[1]['register'] = "total_active_power"
-    sensor[1]['dev_class'] = "power"
-    sensor[1]['state_class'] = "measurement"
+#Basic Level sensor
+sensors.append({'name': "Power State", 'sensor_type': "binary_sensor",
+'register': "run_state",'dev_class': "running",
+'payload_on': "ON",'payload_off': "OFF"})
+
+sensors.append({'name': "Daily Generation", 'sensor_type': "sensor",
+'register': "daily_power_yields", 'dev_class': "energy",
+'state_class': "total_increasing"})
+
+sensors.append({'name': "Active Power", 'sensor_type': "sensor",
+'register': "total_active_power", 'dev_class': "power",
+'state_class': "measurement"})
+
+
+
+#Standard Level
+if int(options['inverter']['level']) >= 1:
+    sensors.append({'name': "Load Power", 'sensor_type': "sensor",
+    'register': "load_power", 'dev_class': "power",
+    'state_class': "measurement"})
+
+    sensors.append({'name': "Phase A Voltage", 'sensor_type': "sensor",
+    'register': "phase_a_voltage", 'dev_class': "voltage",
+    'state_class': "measurement"})
+
+    if options['inverter'].get('smart_meter') == True:
+        
+        sensors.append({'name': "Meter Power", 'sensor_type': "sensor",
+        'register': "meter_power", 'dev_class': "power",
+        'state_class': "measurement"})
     
-    sensor[2]['name'] = "Load Power"
-    sensor[2]['sensor_type'] = "sensor"
-    sensor[2]['register'] = "load_power"
-    sensor[2]['dev_class'] = "power"
-    sensor[2]['state_class'] = "measurement"
-    
-    sensor[3]['name'] = "Meter Power"
-    sensor[3]['sensor_type'] = "sensor"
-    sensor[3]['register'] = "meter_power"
-    sensor[3]['dev_class'] = "power"
-    sensor[3]['state_class'] = "measurement"
+        
+        sensors.append({'name': "Import from Grid", 'sensor_type': "sensor",
+        'register': "import_from_grid", 'dev_class': "power",
+        'state_class': "measurement"})
 
-    sensor[4]['name'] =  "Export to Grid"
-    sensor[4]['sensor_type'] = "sensor"
-    sensor[4]['register'] = "export_to_grid"
-    sensor[4]['dev_class'] = "power"
-    sensor[4]['state_class'] = "measurement"
+        sensors.append({'name': "Export to Grid", 'sensor_type': "sensor",
+        'register': "export_to_grid", 'dev_class': "power",
+        'state_class': "measurement"})
 
-    sensor[5]['name'] =  "Import from Grid"
-    sensor[5]['sensor_type'] = "sensor"
-    sensor[5]['register'] = "import_from_grid"
-    sensor[5]['dev_class'] = "power"
-    sensor[5]['state_class'] = "measurement"
+#Detail Level
+if options['inverter']['level'] >= 2:
+    sensors.append({'name': "Temperature", 'sensor_type': "sensor",
+    'register': "internal_temperature", 'dev_class': "temperature",
+    'state_class': "measurement"})
+  
+options['exports'][0]['ha_sensors']= sensors
 
-    sensor[6]['name'] = "Temperature"
-    sensor[6]['sensor_type'] = "sensor"
-    sensor[6]['register'] = "internal_temperature"
-    sensor[6]['dev_class'] = "temperature"
-    sensor[6]['state_class'] = "measurement"
-
-    sensor[7]['name'] = "Power State"
-    sensor[7]['sensor_type'] = "binary_sensor"
-    sensor[7]['register'] = "run_state"
-    sensor[7]['dev_class'] = "running"
-    sensor[7]['payload_on'] = "ON"
-    sensor[7]['payload_off'] = "OFF"
-    
-    sensor[8]['name'] = "Phase A Voltage"
-    sensor[8]['sensor_type'] = "sensor"
-    sensor[8]['register'] = "phase_a_voltage"
-    sensor[8]['dev_class'] = "voltage"
-    sensor[8]['state_class'] = "measurement"
-   
-    options['exports'][0]['ha_sensors']= sensor
-
-    
-    with open('config.sg', 'w') as yaml_file:
-      yaml.dump(options, yaml_file, default_flow_style=False)
+with open('config.sg', 'w') as yaml_file:
+    yaml.dump(options, yaml_file, default_flow_style=False)

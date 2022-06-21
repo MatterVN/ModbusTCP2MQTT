@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.3.3
+- Create only necessary sensors according to Scan_level
+
 ## 0.3.2
 - Add option model to force detect
 - Add internal temperature sensor
