@@ -11,6 +11,7 @@
 ```yaml
 Inverter_host: Your Inverter Hostname/IP
 Inverter_port: Your Inverter Port (Default: 502). If you have a WiNet-S dongle set to 8082
+Inverter_model: Force the add on to use your specific model. Leave blank for auto detection.
 Scan_interval: 10->600
 Scan_timeout: 3->60
 log_level: INFO|WARNING|ERROR|DEBUG
