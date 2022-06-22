@@ -17,7 +17,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
-#Test: config_generator.py --host=HOST --port=502 --model=model --mqtt_host=MQTT_HOST --mqtt_port=MQTT_PORT --mqtt_user=MQTT_USER --mqtt_pass=MQTT_PASS --scan=10 --timeout=3 --connection=sungrow --meter=true --level=0 --log_level=INFO
+#Test: config_generator.py --host=HOST --port=502 --model=model --mqtt_host=MQTT_HOST --mqtt_port=1883 --mqtt_user=MQTT_USER --mqtt_pass=MQTT_PASS --scan=10 --timeout=3 --connection=sungrow --meter=false --level=STANDARD --log_level=INFO
 
 
 import getopt
@@ -107,12 +107,10 @@ if int(options['inverter']['level']) >= 1:
     'register': "phase_a_voltage", 'dev_class': "voltage",
     'state_class': "measurement"})
 
-    if options['inverter'].get('smart_meter') == True:
-        
+    if options['inverter']['smart_meter'] == True:
         sensors.append({'name': "Meter Power", 'sensor_type': "sensor",
         'register': "meter_power", 'dev_class': "power",
         'state_class': "measurement"})
-    
         
         sensors.append({'name': "Import from Grid", 'sensor_type': "sensor",
         'register': "import_from_grid", 'dev_class': "power",
