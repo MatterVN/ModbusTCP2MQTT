@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.3.3.1
+- Update to Sungather July-8 commit
+
 ## 0.3.3
 - Create only necessary sensors according to Scan_level
 
