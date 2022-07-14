@@ -36,7 +36,7 @@ class SungrowInverter():
         
         self.registers = [[]]
         self.registers.pop() # Remove null value from list
-        self.registers_custom = [{'name': 'export_to_grid', 'unit': 'W'}, {'name': 'import_from_grid', 'unit': 'W'}, {'name': 'run_state'}]
+        self.registers_custom = [{'name': 'export_to_grid', 'unit': 'W', 'address': 'vr001'}, {'name': 'import_from_grid', 'unit': 'W', 'address': 'vr002'}, {'name': 'run_state', 'address': 'vr003'}, {'name': 'timestamp', 'address': 'vr004'}]
         self.register_ranges = [[]]
         self.register_ranges.pop() # Remove null value from list
 
@@ -208,6 +208,9 @@ class SungrowInverter():
                     if register.get('datatype') == "U16":
                         if register_value == 0xFFFF:
                             register_value = 0
+                        if register.get('mask'):
+                            # Filter the value through the mask.
+                            register_value = 1 if register_value & register.get('mask') != 0 else 0
                     elif register.get('datatype') == "S16":
                         if register_value == 0xFFFF or register_value == 0x7FFF:
                             register_value = 0
@@ -234,12 +237,13 @@ class SungrowInverter():
                             if value['response'] == rr.registers[num]:
                                 register_value = value['value']
 
+
+
                     if register.get('accuracy'):
                         register_value = round(register_value * register.get('accuracy'),2)
 
                     # Set the final register value with adjustments above included 
                     self.latest_scrape[register_name] = register_value
-                    break
         return True
 
     def validateRegister(self, check_register):
@@ -253,6 +257,9 @@ class SungrowInverter():
 
     def getRegisterAddress(self, check_register):
         for register in self.registers:
+            if check_register == register['name']:
+                return register['address']
+        for register in self.registers_custom:
             if check_register == register['name']:
                 return register['address']
         return '----'
@@ -406,6 +413,7 @@ class SungrowInverter():
 def main():
     configfilename = 'config.yaml'
     logfolder = ''
+
     try:
         opts, args = getopt.getopt(sys.argv[1:],"hc:l:v:", "runonce")
     except getopt.GetoptError:
