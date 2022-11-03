@@ -99,6 +99,18 @@ sensors.append({'name': "Active Power", 'sensor_type': "sensor",
 
 #Standard Level
 if int(options['inverter']['level']) >= 1:
+    sensors.append({'name': "Total DC Power", 'sensor_type': "sensor",
+    'register': "total_dc_power", 'dev_class': "power",
+    'state_class': "measurement"})
+    
+    sensors.append({'name': "Load Power Hybrid", 'sensor_type': "sensor",
+    'register': "load_power_hybrid", 'dev_class': "power",
+    'state_class': "measurement"})
+    
+    sensors.append({'name': "Export Power Hybrid", 'sensor_type': "sensor",
+    'register': "export_power_hybrid", 'dev_class': "power",
+    'state_class': "measurement"})
+    
     sensors.append({'name': "Load Power", 'sensor_type': "sensor",
     'register': "load_power", 'dev_class': "power",
     'state_class': "measurement"})
@@ -107,9 +119,65 @@ if int(options['inverter']['level']) >= 1:
     'register': "phase_a_voltage", 'dev_class': "voltage",
     'state_class': "measurement"})
 
+    sensors.append({'name': "Phase B Voltage", 'sensor_type': "sensor",
+    'register': "phase_b_voltage", 'dev_class': "voltage",
+    'state_class': "measurement"})
+
+    sensors.append({'name': "Phase C Voltage", 'sensor_type': "sensor",
+    'register': "phase_c_voltage", 'dev_class': "voltage",
+    'state_class': "measurement"})
+
+    sensors.append({'name': "Phase A Current", 'sensor_type': "sensor",
+    'register': "phase_a_current", 'dev_class': "current",
+    'state_class': "measurement"})
+
+    sensors.append({'name': "Phase B Current", 'sensor_type': "sensor",
+    'register': "phase_b_current", 'dev_class': "current",
+    'state_class': "measurement"})
+
+    sensors.append({'name': "Phase C Current", 'sensor_type': "sensor",
+    'register': "phase_c_current", 'dev_class': "current",
+    'state_class': "measurement"})
+
+    sensors.append({'name': "Battery Power", 'sensor_type': "sensor",
+    'register': "battery_power", 'dev_class': "power",
+    'state_class': "measurement"})
+
+    sensors.append({'name': "Battery Power", 'sensor_type': "sensor",
+    'register': "battery_power", 'dev_class': "power",
+    'state_class': "measurement"})
+
+    sensors.append({'name': "Battery SOC", 'sensor_type': "sensor",
+    'register': "battery_level", 'dev_class': "percent",
+    'state_class': "measurement"})
+
+    sensors.append({'name': "Battery Health", 'sensor_type': "sensor",
+    'register': "battery_state_of_healthy", 'dev_class': "percent",
+    'state_class': "measurement"})
+
     if options['inverter']['smart_meter'] == True:
         sensors.append({'name': "Meter Power", 'sensor_type': "sensor",
         'register': "meter_power", 'dev_class': "power",
+        'state_class': "measurement"})
+        
+        sensors.append({'name': "Meter A phase Power", 'sensor_type': "sensor",
+        'register': "meter_a_phase_power", 'dev_class': "power",
+        'state_class': "measurement"})
+        
+        sensors.append({'name': "Meter B phase Power", 'sensor_type': "sensor",
+        'register': "meter_b_phase_power", 'dev_class': "power",
+        'state_class': "measurement"})
+        
+        sensors.append({'name': "Meter C phase Power", 'sensor_type': "sensor",
+        'register': "meter_c_phase_power", 'dev_class': "power",
+        'state_class': "measurement"})
+        
+        sensors.append({'name': "Export Power", 'sensor_type': "sensor",
+        'register': "export_power", 'dev_class': "power",
+        'state_class': "measurement"})
+        
+        sensors.append({'name': "Power Meter", 'sensor_type': "sensor",
+        'register': "power_meter", 'dev_class': "power",
         'state_class': "measurement"})
         
         sensors.append({'name': "Import from Grid", 'sensor_type': "sensor",
@@ -124,6 +192,18 @@ if int(options['inverter']['level']) >= 1:
 if options['inverter']['level'] >= 2:
     sensors.append({'name': "Temperature", 'sensor_type': "sensor",
     'register': "internal_temperature", 'dev_class': "temperature",
+    'state_class': "measurement"})
+    
+    sensors.append({'name': "Battery Temperature", 'sensor_type': "sensor",
+    'register': "battery_temperature", 'dev_class': "temperature",
+    'state_class': "measurement"})
+    
+    sensors.append({'name': "Total Active Power", 'sensor_type': "sensor",
+    'register': "total_active_power", 'dev_class': "power",
+    'state_class': "measurement"})
+    
+    sensors.append({'name': "Total Reactive Power", 'sensor_type': "sensor",
+    'register': "total_reactive_power", 'dev_class': "power",
     'state_class': "measurement"})
   
 options['exports'][0]['ha_sensors']= sensors
