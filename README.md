@@ -19,7 +19,7 @@ SH5K-20, SH3K6, SH4K6, SH5K-V13, SH5K-30, SH3K6-30, SH4K6-30, SH5.0RS, SH3.6RS, 
 
 ## Installation
 1. Navigate in your Home Assistant frontend to Supervisor -> Add-on Store.
-2. Click the 3-dots menu at upper right ... -> Repositories and add [https://github.com/TenySmart/HassioAddon](https://github.com/TenySmart/HassioAddon)
+2. Click the 3-dots menu at upper right ... -> Repositories and add [https://github.com/MatterVN/HassioAddon](https://github.com/TenySmart/HassioAddon)
 3. Install ModbusTCP2MQTT Addon
 4. Configure and Start it
 

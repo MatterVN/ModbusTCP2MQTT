@@ -325,16 +325,29 @@ class SungrowInverter():
 
         # Create a registers for Power imported and exported to/from Grid
         if self.inverter_config['level'] >= 1:
-            try:
-                self.latest_scrape["export_to_grid"] = 0
-                self.latest_scrape["import_from_grid"] = 0
-                power = self.latest_scrape.get('meter_power', self.latest_scrape.get('export_power', 0))
-                if power < 0:
-                    self.latest_scrape["export_to_grid"] = abs(power)
-                elif power >= 0:
-                    self.latest_scrape["import_from_grid"] = power
-            except Exception:
-                pass
+            self.latest_scrape["export_to_grid"] = 0
+            self.latest_scrape["import_from_grid"] = 0
+
+            if self.validateRegister('meter_power'):
+                try:
+                    power = self.latest_scrape.get('meter_power', self.latest_scrape.get('export_power', 0))
+                    if power < 0:
+                        self.latest_scrape["export_to_grid"] = abs(power)
+                    elif power >= 0:
+                        self.latest_scrape["import_from_grid"] = power
+                except Exception:
+                    pass
+            # in this case we connected to a hybrid inverter and need to use export_power_hybrid
+            # export_power_hybrid is negative in case of importing from the grid
+            elif self.validateRegister('export_power_hybrid'):
+                try:
+                    power = self.latest_scrape.get('export_power_hybrid', 0)
+                    if power < 0:
+                        self.latest_scrape["import_from_grid"] = abs(power)
+                    elif power >= 0:
+                        self.latest_scrape["export_to_grid"] = power
+                except Exception:
+                    pass
         
         try: # If inverter is returning no data for load_power, we can calculate it manually
             if not self.latest_scrape["load_power"]:
@@ -539,7 +552,7 @@ def main():
 
     # Core polling loop
     while True:
-        loop_start = datetime.now()
+        loop_start = time.perf_counter()
 
         inverter.checkConnection()
 
@@ -554,8 +567,8 @@ def main():
             inverter.disconnect()
             logging.warning(f"Data collection failed, skipped exporting data. Retying in {scan_interval} secs")
 
-        loop_end = datetime.now()
-        process_time = round(float(((loop_end - loop_start).seconds) + ((loop_end - loop_start).microseconds / 1000000)),2)
+        loop_end = time.perf_counter()
+        process_time = round(loop_end - loop_start, 2)
         logging.debug(f'Processing Time: {process_time} secs')
 
         if 'runonce' in locals():
