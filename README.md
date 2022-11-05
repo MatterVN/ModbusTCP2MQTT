@@ -25,8 +25,11 @@ SH5K-20, SH3K6, SH4K6, SH5K-V13, SH5K-30, SH3K6-30, SH4K6-30, SH5.0RS, SH3.6RS, 
 3. Install ModbusTCP2MQTT Addon
 4. Configure and Start it
 
+## smart_meter: True - (Only needed for SG* Models) 
+Set to true if you have a smart meter installed, this will return power usage at the meter box, without it you can not calculate house power usage. Hybrid inverters will provide this by default (load_power_hybrid)
+
 ## Registers
-This tool should be able to access most registers exposed. Set the following in config.yaml under inverters section.
+This tool should be able to access most registers exposed. Some registers only exposed to MQTT, you must create sensor manually. (Sorry i don't have time):
 
 level: 1 - This is the most useful data for day to day
 
@@ -34,9 +37,7 @@ Level: 2 - This should be everything your inverter supports
 
 Level: 3 - This will try every register, you will get lots of 0/65535 responses for registers not supported.
 
-smart_meter: True - (Only needed for SG* Models) Set to true if you have a smart meter installed, this will return power usage at the meter box, without it you can not calculate house power usage. Hybrid inverters will provide this by default (load_power_hybrid)
-
-Useful Registers:
+### Useful Registers:
 This is just a brief list of registers I have found useful
 
 daily_power_yields - Total Power in kWh generated today
