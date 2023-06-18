@@ -1,0 +1,38 @@
+{
+  "name": "ModbusTCP2MQTT",
+  "version": "0.3.8",
+  "slug": "modbus_inverter",
+  "description": "Sungrow/SMA inverter Modbus Data Fetcher",
+  "arch": ["armhf", "armv7", "aarch64", "amd64", "i386"],
+  "url": "https://github.com/MatterVN/ModbusTCP2MQTT",
+  "init": false,
+  "startup": "application",
+  "boot": "auto",
+  "services": [
+    "mqtt:need"
+  ],
+  "options": {
+    "Inverter_host": "",
+    "Inverter_port": 502,
+    "Inverter_model": "",
+    "Smart_meter": false,
+    "Connection": "Sungrow",
+    "Scan_level": "STANDARD",
+    "Scan_interval": 30,
+    "Scan_timeout": 5,
+    "Log_level": "INFO"
+  },
+  "schema": {
+    "Inverter_host": "str",
+    "Inverter_port": "port",
+    "Inverter_model": "str",
+    "Smart_meter": "bool",
+    "Connection": "list(Sungrow|Modbus|HTTP)",
+    "Scan_level": "list(BASIC|STANDARD|DETAIL|ALL)",
+
+    "Scan_interval": "int(10,600)",
+    "Scan_timeout": "int(3,60)",
+    "Log_level": "bool?",
+    "warn_for_low_space": "list(INFO|WARNING|ERROR|DEBUG)"
+  }
+}
