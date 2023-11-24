@@ -1,6 +1,6 @@
 {
   "name": "ModbusTCP2MQTT",
-  "version": "0.3.8",
+  "version": "0.3.9",
   "slug": "modbus_inverter",
   "description": "Sungrow/SMA inverter Modbus Data Fetcher",
   "arch": ["armhf", "armv7", "aarch64", "amd64", "i386"],
@@ -32,7 +32,7 @@
 
     "Scan_interval": "int(10,600)",
     "Scan_timeout": "int(3,60)",
-    "Log_level": "bool?",
-    "warn_for_low_space": "list(INFO|WARNING|ERROR|DEBUG)"
+    "Log_level": "list(INFO|WARNING|ERROR|DEBUG)",
+    "warn_for_low_space": "bool?"
   }
 }
