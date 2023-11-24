@@ -1,4 +1,4 @@
-PyYAML
+PyYAML==5.3.1
 requests>=2.26.0
 paho-mqtt>=1.5.1
 pymodbus~=2.5.3
