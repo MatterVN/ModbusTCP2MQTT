@@ -1,5 +1,6 @@
 # ModbusTCP2MQTT
-> Fork of MatterVN/ModbusTCP2MQTT
+> My organization has renamed to MatterVN. All "TenySmart" repos will be redirected to "MatterVN".
+> Please check and update your urls.
 Sungrow &amp; SMA Solar Inverter addon for Home Assistant.
 This addon will connect directly to your Inverter using ModbusTCP/MobusWebTCP
 
