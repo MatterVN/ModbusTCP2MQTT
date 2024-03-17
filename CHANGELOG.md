@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.3.3.2
+- Updated to work with new version of MQTT library
+
 ## 0.3.3.1
 - Update to Sungather July-8 commit
 
